@@ -25,8 +25,6 @@ func main() {
 	for _, file := range files {
 		inputFiles = append(inputFiles, filepath.Join(path, file.Name()))
 
-		//fmt.Println(filepath.Join(path, file.Name()))
-
 		schemas, err := inputs.ReadInputFiles(inputFiles, true)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, err.Error())
@@ -45,7 +43,7 @@ func main() {
 
 		w, err = os.Create(filepath.Join(outputDir, filepath.Base(utils.FileNameCreation(file.Name()))))
 
-		inputs.Output(w, g, outputPackageName)
+		inputs.Output(w, g, outputPackageName, utils.SuffixFileExtension(file.Name()))
 
 	}
 
