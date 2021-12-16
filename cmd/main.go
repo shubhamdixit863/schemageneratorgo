@@ -15,7 +15,6 @@ const outputDir = "./output"
 const outputPackageName = "output"
 
 func main() {
-	var inputFiles []string
 
 	// Reading file recursively from the directory
 	files, _ := os.ReadDir(dir)
@@ -23,6 +22,7 @@ func main() {
 	path, _ := filepath.Abs(dir)
 
 	for _, file := range files {
+		var inputFiles []string
 		inputFiles = append(inputFiles, filepath.Join(path, file.Name()))
 
 		schemas, err := inputs.ReadInputFiles(inputFiles, true)

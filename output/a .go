@@ -9,12 +9,8 @@ import (
     "errors"
 )
 
-// PackageList List of packages marked as abandoned for this repository, the mark can be boolean or a package name/URL pointing to a recommended alternative.
-type PackageList struct {
-}
-
-// Root 
-type Root struct {
+// AdditionalUu 
+type AdditionalUu struct {
 
   // List of packages marked as abandoned for this repository, the mark can be boolean or a package name/URL pointing to a recommended alternative.
   Abandoned *PackageList `json:"abandoned,omitempty"`
@@ -23,7 +19,11 @@ type Root struct {
   Name string `json:"name"`
 }
 
-func (strct *Root) AMarshalJSON() ([]byte, error) {
+// PackageList List of packages marked as abandoned for this repository, the mark can be boolean or a package name/URL pointing to a recommended alternative.
+type PackageList struct {
+}
+
+func (strct *AdditionalUu) AMarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	buf.WriteString("{")
     comma := false
@@ -57,7 +57,7 @@ func (strct *Root) AMarshalJSON() ([]byte, error) {
 	return rv, nil
 }
 
-func (strct *Root) AUnmarshalJSON(b []byte) error {
+func (strct *AdditionalUu) AUnmarshalJSON(b []byte) error {
     nameReceived := false
     var jsonMap map[string]json.RawMessage
     if err := json.Unmarshal(b, &jsonMap); err != nil {
