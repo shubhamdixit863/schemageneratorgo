@@ -4,7 +4,7 @@ import (
 	"github.com/shubh/json/pkg/converter"
 )
 
-const dir = "./schemas"
+const dir = "./schemas" // absolute paths
 const outputDir = "./output"
 const outputPackageName = "output"
 
