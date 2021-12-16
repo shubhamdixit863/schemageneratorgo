@@ -31,7 +31,7 @@ func getOrderedStructNames(m map[string]Struct) []string {
 }
 
 // Output generates code and writes to w.
-func Output(w io.Writer, g *Generator, pkg string, jsonFileName string) {
+func Output(w io.Writer, g *Generator, pkg string) {
 
 	structs := g.Structs
 	aliases := g.Aliases
@@ -48,8 +48,8 @@ func Output(w io.Writer, g *Generator, pkg string, jsonFileName string) {
 	for _, k := range getOrderedStructNames(structs) {
 		s := structs[k]
 		if s.GenerateCode {
-			emitMarshalCode(codeBuf, s, imports, jsonFileName) //functions generating the marshall and unmarshall methods
-			emitUnmarshalCode(codeBuf, s, imports, jsonFileName)
+			emitMarshalCode(codeBuf, s, imports) //functions generating the marshall and unmarshall methods
+			emitUnmarshalCode(codeBuf, s, imports)
 		}
 	}
 
@@ -99,15 +99,15 @@ func Output(w io.Writer, g *Generator, pkg string, jsonFileName string) {
 	w.Write(codeBuf.Bytes())
 }
 
-func emitMarshalCode(w io.Writer, s Struct, imports map[string]bool, fileName string) {
+func emitMarshalCode(w io.Writer, s Struct, imports map[string]bool) {
 
 	imports["bytes"] = true
 	fmt.Fprintf(w,
 		`
-func (strct *%s) %sMarshalJSON() ([]byte, error) {
+func (strct *%s) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(make([]byte, 0))
 	buf.WriteString("{")
-`, s.Name, fileName)
+`, s.Name)
 
 	if len(s.Fields) > 0 {
 		fmt.Fprintf(w, "    comma := false\n")
@@ -180,12 +180,12 @@ func (strct *%s) %sMarshalJSON() ([]byte, error) {
 `)
 }
 
-func emitUnmarshalCode(w io.Writer, s Struct, imports map[string]bool, fileName string) {
+func emitUnmarshalCode(w io.Writer, s Struct, imports map[string]bool) {
 	imports["encoding/json"] = true
 	// unmarshal code
 	fmt.Fprintf(w, `
-func (strct *%s) %sUnmarshalJSON(b []byte) error {
-`, s.Name, fileName)
+func (strct *%s) UnmarshalJSON(b []byte) error {
+`, s.Name)
 	// setup required bools
 	for _, fieldKey := range getOrderedFieldNames(s.Fields) {
 		f := s.Fields[fieldKey]

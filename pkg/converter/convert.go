@@ -17,6 +17,8 @@ func readFilesFromDir(dir string) []fs.DirEntry {
 
 }
 
+// Creates a directory then create a particular file In that
+
 func Convert(dir string, outputDir string, outputPackageName string) {
 
 	path, _ := filepath.Abs(dir)
@@ -27,23 +29,28 @@ func Convert(dir string, outputDir string, outputPackageName string) {
 
 		schemas, err := inputs.ReadInputFiles(inputFiles, true)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, err.Error())
+			//fmt.Fprintf(os.Stderr, err.Error())
 			os.Exit(1)
 		}
 
 		g := inputs.New(schemas...)
 
-		err = g.CreateTypes(utils.SuffixFileExtension(file.Name())) // Passing file name if in case the title is not prsent in the document
+		err = g.CreateTypes(utils.Sanitizestring(utils.SuffixFileExtension(file.Name()))) // Passing file name if in case the title is not prsent in the document
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "Failure generating structs: ", err)
+			//fmt.Fprintln(os.Stderr, "Failure generating structs: ", err)
 			os.Exit(1)
 		}
 
 		var w io.Writer = os.Stdout
 
-		w, err = os.Create(filepath.Join(outputDir, filepath.Base(utils.FileNameCreation(file.Name()))))
+		//Create the dir
+		packageDirectory := fmt.Sprintf("%s/%s", outputDir, utils.Sanitizestring(file.Name()))
+		packageName := utils.Sanitizestring(file.Name())
+		err = os.Mkdir(packageDirectory, 0755)
 
-		inputs.Output(w, g, outputPackageName, utils.SuffixFileExtension(file.Name()))
+		w, err = os.Create(filepath.Join(packageDirectory, filepath.Base(utils.FileNameCreation(file.Name()))))
+
+		inputs.Output(w, g, packageName)
 
 	}
 
