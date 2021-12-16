@@ -2,17 +2,6 @@
 
 package output
 
-// AdditionalProperties 
-type AdditionalProperties struct {
-  Property1 string `json:"property1,omitempty"`
-  Property2 *Address `json:"property2,omitempty"`
-  Property3 map[string]int `json:"property3,omitempty"`
-  Property4 map[string]string `json:"property4,omitempty"`
-  Property5 map[string]*NotSoAnonymous `json:"property5,omitempty"`
-  Property6 map[string]*Property6Item `json:"property6,omitempty"`
-  Property7 map[string]map[string]*Anonymous1 `json:"property7,omitempty"`
-}
-
 // Address 
 type Address struct {
   City string `json:"city,omitempty"`
@@ -21,6 +10,17 @@ type Address struct {
 // Anonymous1 
 type Anonymous1 struct {
   Subproperty1 int `json:"subproperty1,omitempty"`
+}
+
+// B 
+type B struct {
+  Property1 string `json:"property1,omitempty"`
+  Property2 *Address `json:"property2,omitempty"`
+  Property3 map[string]int `json:"property3,omitempty"`
+  Property4 map[string]string `json:"property4,omitempty"`
+  Property5 map[string]*NotSoAnonymous `json:"property5,omitempty"`
+  Property6 map[string]*Property6Item `json:"property6,omitempty"`
+  Property7 map[string]map[string]*Anonymous1 `json:"property7,omitempty"`
 }
 
 // NotSoAnonymous 

@@ -31,7 +31,7 @@ func New(schemas ...*Schema) *Generator {
 }
 
 // CreateTypes creates types from the JSON schemas, keyed by the golang name.
-func (g *Generator) CreateTypes() (err error) {
+func (g *Generator) CreateTypes(fileName string) (err error) {
 	if err := g.resolver.Init(); err != nil {
 		return err
 	}
@@ -39,6 +39,10 @@ func (g *Generator) CreateTypes() (err error) {
 	// extract the types
 	for _, schema := range g.schemas {
 		name := g.getSchemaName("", schema)
+
+		if name == "Root" { // Giving the name  as fileName in case it returns Root so to avoild name clashes for same package
+			name = fileName
+		}
 		rootType, err := g.processSchema(name, schema)
 		if err != nil {
 			return err

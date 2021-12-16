@@ -33,7 +33,7 @@ func main() {
 
 		g := inputs.New(schemas...)
 
-		err = g.CreateTypes()
+		err = g.CreateTypes(utils.SuffixFileExtension(file.Name())) // Passing file name if in case the title is not prsent in the document
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Failure generating structs: ", err)
 			os.Exit(1)
