@@ -3,7 +3,6 @@ package converter
 import (
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -11,46 +10,44 @@ import (
 	"github.com/shubh/json/pkg/utils"
 )
 
-func readFilesFromDir(dir string) []fs.DirEntry {
-	files, _ := os.ReadDir(dir)
-	return files
-
+type ConvertSchema struct {
+	files            []os.DirEntry
+	inputFiles       []string
+	packageDirectory string
+	packageName      string
 }
 
-// Creates a directory then create a particular file In that
+//Reads the files From Directories
+func (cs *ConvertSchema) readFilesFromDir(dir string) {
+	cs.files, _ = os.ReadDir(dir)
+}
 
-func Convert(dir string, outputDir string, outputPackageName string) {
+// Package name formatting
+func (cs *ConvertSchema) packageFormat(outputDir string, file os.DirEntry) {
+	cs.packageDirectory = fmt.Sprintf("%s/%s", outputDir, utils.Sanitizestring(file.Name()))
+	cs.packageName = utils.Sanitizestring(file.Name())
+}
 
-	path, _ := filepath.Abs(dir)
+func (cs *ConvertSchema) Convert(dir string, outputDir string) {
+	path, _ := filepath.Abs(dir) //Get the absolute path of the files
+	cs.readFilesFromDir(dir)
 
-	for _, file := range readFilesFromDir(dir) {
-		var inputFiles []string
-		inputFiles = append(inputFiles, filepath.Join(path, file.Name()))
-
-		schemas, err := inputs.ReadInputFiles(inputFiles, true)
+	for _, file := range cs.files {
+		cs.inputFiles = append(cs.inputFiles, filepath.Join(path, file.Name()))
+		schemas, err := inputs.ReadInputFiles(cs.inputFiles, true)
 		if err != nil {
-			//fmt.Fprintf(os.Stderr, err.Error())
 			os.Exit(1)
 		}
-
 		g := inputs.New(schemas...)
-
 		err = g.CreateTypes(utils.Sanitizestring(utils.SuffixFileExtension(file.Name()))) // Passing file name if in case the title is not prsent in the document
 		if err != nil {
-			//fmt.Fprintln(os.Stderr, "Failure generating structs: ", err)
 			os.Exit(1)
 		}
-
 		var w io.Writer = os.Stdout
-
-		//Create the dir
-		packageDirectory := fmt.Sprintf("%s/%s", outputDir, utils.Sanitizestring(file.Name()))
-		packageName := utils.Sanitizestring(file.Name())
-		err = os.Mkdir(packageDirectory, 0755)
-
-		w, err = os.Create(filepath.Join(packageDirectory, filepath.Base(utils.FileNameCreation(file.Name()))))
-
-		inputs.Output(w, g, packageName)
+		cs.packageFormat(outputDir, file)
+		err = os.Mkdir(cs.packageDirectory, 0755)
+		w, err = os.Create(filepath.Join(cs.packageDirectory, filepath.Base(utils.FileNameCreation(file.Name()))))
+		inputs.Output(w, g, cs.packageName)
 
 	}
 
